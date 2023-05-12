@@ -3,6 +3,7 @@ bilibili用户信息爬取demo
 只需要一个回车我要TA的所有信息！
 by - cwuom
 """
+import os
 import random
 
 import requests
@@ -42,7 +43,6 @@ user_agent_list = [
 ]
 
 headers = {'User-Agent': random.choice(user_agent_list)}
-
 
 # 输出分割线
 def print_long_line(title="", no_title=False, longer=False, enter=False):
@@ -110,7 +110,7 @@ def save_danmu_wordcloud(msg_list, name, mid):
                               contour_color='steelblue',
                               font_path="PingFang-Bold_0.ttf"
                               ).generate(result)
-        wordcloud.to_file(f'WordCloud_{name}_{mid}.png')
+        wordcloud.to_file(f'wordcloud_data\\WordCloud_{name}_{mid}.png')
     except:
         print("[E] wordcloud 抛出了异常，请检查用户发言数量是否足以构成词云？")
 
@@ -486,6 +486,11 @@ def get_video_info(mid, headers, cookies):
     return title_list, description_list
 
 
+def makedirs(folder):
+    if not os.path.exists(folder):  # 判断是否存在文件夹如果不存在则创建为文件夹
+        os.makedirs(folder)
+        print(f"[{folder}] created!")
+
 # ============================================
 
 
@@ -496,7 +501,6 @@ if __name__ == '__main__':
         "By-cwuom\n"
         "========================================")
 
-    skip_mode = False  # 跳过第一个API请求
 
     while True:
         if CookiesAutocheck:
@@ -522,84 +526,73 @@ if __name__ == '__main__':
                 continue
 
         CookiesAutocheck = False  # 关闭cookies审查，避免重复
+
+        # 创建必要文件夹
+        makedirs("datas")
+        makedirs("gpt_datas")
+        makedirs("wordcloud_data")
         try:
             mid = input("\nmid> ")
             if mid == "exit":
                 exit(0)  # 直接退出
 
-            # 开启关闭第一个请求
-            if mid == "skip on":
-                skip_mode = True
-                print("[DEBUG] Request skip was enabled")
-                continue
-            elif mid == "skip off":
-                skip_mode = False
-                print("[DEBUG] Request skipping was turned off")
-                continue
+            print("[/] Getting info, please wait...")
+            all_data = get_UserInfo()
+            data, famous_fans = all_data[0], all_data[1]
 
-            if not skip_mode:
-                print("[/] Getting info, please wait...")
-                all_data = get_UserInfo()
-                data, famous_fans = all_data[0], all_data[1]
+            print("[!] Loading data...")
 
-                print("[!] Loading data...")
+            print(data)
+            all_info = load_UserInfo(data)
+            f = open(f"datas\\{all_info['name']}_{mid}.txt", "w", encoding="utf-8")  # 记录获取到的信息
 
-                print(data)
-                all_info = load_UserInfo(data)
-                f = open(f"{all_info['name']}_{mid}.txt", "w", encoding="utf-8")  # 记录获取到的信息
+            # 输出主要信息，此接口可突破官方API限制
+            output(
+                f"=============================\nWarning: 以下数据截止到{get_date()}\n被收集者UID: {mid}，请勿用于非法用途\nFrom - https://workers.vrp.moe/\n=============================\n")
+            print_long_line("UserInfo", enter=True)
+            output(f"[昵称] {all_info['name']}")
+            output(f"[性别] {all_info['sex']}")
+            output(f"[rank] {all_info['rank']}")
+            output(f"[头像链接] {all_info['face']}")
+            output(f"[硬币数量] {all_info['coins']}")
+            output(f"[DisplayRank] {all_info['DisplayRank']}")
+            output(f"[注册时间] {all_info['regtime']}")
+            output(f"[生日] {all_info['birthday']}")
+            output(f"[个性签名] {all_info['sign']}")
+            output(f"[粉丝数量] {all_info['fans']}")
+            output(f"[关注数] {all_info['friend']}")
 
-                # 输出主要信息，此接口可突破官方API限制
+            print_long_line("XP")
+
+            output(f"当前exp -> {all_info['current_exp']}exp")
+            output(f"等级 -> LV{all_info['current_level']}")
+            output(f"下一级所需 -> {all_info['next_exp']}exp")
+            output(f"当前等级门槛 -> {all_info['current_min']}exp")
+            if all_info['next_exp'] != -1:
                 output(
-                    f"=============================\nWarning: 以下数据截止到{get_date()}\n被收集者UID: {mid}，请勿用于非法用途\nFrom - https://workers.vrp.moe/\n=============================\n")
-                print_long_line("UserInfo", enter=True)
-                output(f"[昵称] {all_info['name']}")
-                output(f"[性别] {all_info['sex']}")
-                output(f"[rank] {all_info['rank']}")
-                output(f"[头像链接] {all_info['face']}")
-                output(f"[硬币数量] {all_info['coins']}")
-                output(f"[DisplayRank] {all_info['DisplayRank']}")
-                output(f"[注册时间] {all_info['regtime']}")
-                output(f"[生日] {all_info['birthday']}")
-                output(f"[个性签名] {all_info['sign']}")
-                output(f"[粉丝数量] {all_info['fans']}")
-                output(f"[关注数] {all_info['friend']}")
-
-                print_long_line("XP")
-
-                output(f"当前exp -> {all_info['current_exp']}exp")
-                output(f"等级 -> LV{all_info['current_level']}")
-                output(f"下一级所需 -> {all_info['next_exp']}exp")
-                output(f"当前等级门槛 -> {all_info['current_min']}exp")
-                if all_info['next_exp'] != -1:
-                    output(
-                        f"升级进度 -> 还差{all_info['next_exp'] - all_info['current_exp']}exp可升级，当前进度为{(all_info['current_exp'] / all_info['next_exp']) * 100}%")
-                else:
-                    output(
-                        f"升级进度 -> 此人等级已经爆表！超出LV6 {all_info['current_exp'] - all_info['current_min']}exp")
-                print_long_line("FamousFans")
-
-                output(f"- 以下为关注{all_info['name']}的知名UP，为空则无 -")
-                # 遍历关注TA的知名粉丝
-                try:
-                    for fan in json.loads(famous_fans.text):
-                        print_long_line(no_title=True)
-                        output(f"昵称: {fan['name']}")
-                        output(f"粉丝数: {fan['fans']}")
-                        output(
-                            f"跟UP的差距: {fan['fans'] - all_info['fans']} ({fan['name']}的粉丝数 - {all_info['name']}的粉丝数)")
-                        output(f"UID: {fan['mid']}")
-                except:
-                    pass
-
-                print_long_line(no_title=True)
-
-                input("[-] 以上内容为访客方式获取，按下回车加载更多数据。（请注意，以下内容需要使用您的cookies）")
-                break
+                    f"升级进度 -> 还差{all_info['next_exp'] - all_info['current_exp']}exp可升级，当前进度为{(all_info['current_exp'] / all_info['next_exp']) * 100}%")
             else:
-                # 跳过第一个请求
-                f = open(f"skip_{mid}.txt", "w", encoding="utf-8")  # 记录获取到的信息
-                print("[X] 费时请求已被略过，直接载入主页、直播间数据...")
-                break
+                output(
+                    f"升级进度 -> 此人等级已经爆表！超出LV6 {all_info['current_exp'] - all_info['current_min']}exp")
+            print_long_line("FamousFans")
+
+            output(f"- 以下为关注{all_info['name']}的知名UP，为空则无 -")
+            # 遍历关注TA的知名粉丝
+            try:
+                for fan in json.loads(famous_fans.text):
+                    print_long_line(no_title=True)
+                    output(f"昵称: {fan['name']}")
+                    output(f"粉丝数: {fan['fans']}")
+                    output(
+                        f"跟UP的差距: {fan['fans'] - all_info['fans']} ({fan['name']}的粉丝数 - {all_info['name']}的粉丝数)")
+                    output(f"UID: {fan['mid']}")
+            except:
+                pass
+
+            print_long_line(no_title=True)
+
+            input("[-] 以上内容为访客方式获取，按下回车加载更多数据。（请注意，以下内容需要使用您的cookies）")
+            break
         except:
             print("[E] Error, please check your input or network settings and try again")
             continue
@@ -750,11 +743,11 @@ if __name__ == '__main__':
         print("[EXIT] 用户取消了操作")
         exit(0)
 
-    f = open(f"gpt_{mid}_{all_info['name']}.txt", "w", encoding="utf-8")
+    f = open(f"gpt_datas\\gpt_{mid}_{all_info['name']}.txt", "w", encoding="utf-8")
     f.write(
         f"TA的B站基本信息: \n昵称: {all_info['name']}\n简介: {all_info['sign']}\n粉丝数量: {all_info['fans']}\n关注数: {all_info['friend']}")
     result = ""
-    f.write(f"\n\n以下是{all_info['name']}在各大直播间的发言(随机挑选35条):")
+    f.write(f"\n\n以下是{all_info['name']}在各大直播间的发言(随机挑选100条):")
     for t in range(100):
         result = result + f"\n" + random.choice(msg_list)
 
