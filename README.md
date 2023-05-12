@@ -1,0 +1,2 @@
+# GetBilibiliUserInfo
+一个通过Python编写的全自动哔哩哔哩个人信息爬取工具
