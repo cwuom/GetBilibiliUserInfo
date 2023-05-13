@@ -1,8 +1,9 @@
 """
 bilibili用户信息爬取demo
 只需要一个回车我要TA的所有信息！
-by - cwuom
+by - im-cwuom
 """
+
 import os
 import random
 
@@ -12,13 +13,14 @@ import time
 import datetime
 import logging
 import http.client
+import traceback
 
 from wordcloud import WordCloud
 
 http.client.HTTPConnection.debuglevel = 1
 
 # You must initialize logging, otherwise you'll not see debug output.
-logging.basicConfig()
+logging.basicConfig(filename='runlog.log', filemode='a+', level=logging.DEBUG)
 logging.getLogger().setLevel(logging.DEBUG)
 requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
@@ -30,6 +32,8 @@ CookiesAutocheck = True  # 启用cookies自动检测
 # https://workers.vrp.moe/api/bilibili/famous-fans/473400804
 
 f = 0  # open temp
+
+__version__ = "1.0b"  # version
 
 user_agent_list = [
     "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
@@ -43,6 +47,19 @@ user_agent_list = [
 ]
 
 headers = {'User-Agent': random.choice(user_agent_list)}
+
+ef = open("runlog.log", "a+", encoding="utf-8")
+
+
+def Major_err_log():
+    ef.write("\n\n=========== Major_err ===========\n")
+    ef.write(f"[*{get_date()}*] {traceback.format_exc()}\n")
+    ef.write("=================================\n")
+
+
+def err_log():
+    ef.write(f"[{get_date()}*NormalErr] {traceback.format_exc()}\n")
+
 
 # 输出分割线
 def print_long_line(title="", no_title=False, longer=False, enter=False):
@@ -112,6 +129,7 @@ def save_danmu_wordcloud(msg_list, name, mid):
                               ).generate(result)
         wordcloud.to_file(f'wordcloud_data\\WordCloud_{name}_{mid}.png')
     except:
+        err_log()
         print("[E] wordcloud 抛出了异常，请检查用户发言数量是否足以构成词云？")
 
 
@@ -174,6 +192,8 @@ def output_space_data(mid):
                 archive_view = views_data["archive"]["view"]
                 article_view = views_data["article"]["view"]
             except:
+                err_log()
+
                 archive_view = "无"
                 article_view = "无"
 
@@ -254,6 +274,7 @@ def output_space_data(mid):
                     roomStatus = "无"
 
             except:
+                err_log()
                 liveStatus = "无"
                 live_url = "无"
                 live_title = "无"
@@ -264,6 +285,7 @@ def output_space_data(mid):
 
             break
         except:
+            Major_err_log()
             cookies = update_cookies("Something went wrong! "
                                      "please update your cookies or check your network setting...",
                                      "",
@@ -282,7 +304,7 @@ def output_space_data(mid):
     try:
         output(f"[被赞率] {(likes / (article_view + archive_view)) * 100}%")
     except:
-        pass
+        err_log()
     print_long_line("VIP INFO")
     output(f"[会员状态] {vip_status}")
     output(f"[会员类型] {vip_type}")
@@ -409,6 +431,7 @@ def get_live_data():
             live_data = requests.get(f"https://ukamnads.icu/api/search/user/channel?uid={mid}", headers=headers)
             return live_data
         except:
+            Major_err_log()
             get_err()
             continue
 
@@ -424,6 +447,7 @@ def get_danmu_data():
             try:
                 json.loads(res.text)["data"]["data"]
             except:
+                err_log()
                 break
 
             print("[Getting] pn =", pn)
@@ -477,6 +501,7 @@ def get_video_info(mid, headers, cookies):
                     title_list.append(video["title"])
                     description_list.append(video["description"])
         except:
+            err_log()
             print(f"[Getting] Over, Got {len(res_list)} pages")
             break
 
@@ -491,16 +516,17 @@ def makedirs(folder):
         os.makedirs(folder)
         print(f"[{folder}] created!")
 
+
 # ============================================
 
 
 if __name__ == '__main__':
     print(
         "========================================\n"
-        "GetBilibiliUserInfo - demo\n"
-        "By-cwuom\n"
+        f"GetBilibiliUserInfo - {__version__}\n"
+        "github > https://github.com/cwuom/GetBilibiliUserInfo\n"
+        "bilibili@im-cwuom > https://space.bilibili.com/473400804\n"
         "========================================")
-
 
     while True:
         if CookiesAutocheck:
@@ -509,6 +535,7 @@ if __name__ == '__main__':
                 with open("cookies.txt", "r") as r:
                     cookies = r.read()
             except:
+                Major_err_log()
                 cookies = update_cookies("'cookies.txt' not found!", "cookies",
                                          "please input your cookies first and try again...")
 
@@ -521,6 +548,7 @@ if __name__ == '__main__':
                     cookies = update_cookies("Something went wrong, please update your cookies....", "cookies", "")
                     continue
             except:
+                Major_err_log()
                 cookies = update_cookies("Something went wrong, please check your cookies or input new cookies here!",
                                          "cookies", "")
                 continue
@@ -587,19 +615,21 @@ if __name__ == '__main__':
                         f"跟UP的差距: {fan['fans'] - all_info['fans']} ({fan['name']}的粉丝数 - {all_info['name']}的粉丝数)")
                     output(f"UID: {fan['mid']}")
             except:
-                pass
+                err_log()
 
             print_long_line(no_title=True)
 
             input("[-] 以上内容为访客方式获取，按下回车加载更多数据。（请注意，以下内容需要使用您的cookies）")
             break
         except:
+            Major_err_log()
             print("[E] Error, please check your input or network settings and try again")
             continue
     # ====================================================================================================
     try:
         cookies = output_space_data(mid)
     except:
+        Major_err_log()
         output("[E] 在解析view/vip/live data时部分环节出现了致命问题。这可能是风控导致，若此问题持续出现请联系开发者！")
 
     output("\n\n")
@@ -636,6 +666,7 @@ if __name__ == '__main__':
         output(f"[主播统计] 共观看了{n_}名主播。")
         output(f"[观看直播次数] {watch_num}次\n")
     except:
+        Major_err_log()
         output("[E] 在解析'观看排行'时部分环节出现了致命问题。这可能是风控导致，若此问题持续出现请联系开发者！")
 
     # =============================================================
@@ -647,6 +678,7 @@ if __name__ == '__main__':
     try:
         danmu_data = load_danmu_data(data_list)
     except:
+        Major_err_log()
         output("[E] 在解析'发言数据'时遇到问题。此问题可能是风控导致，若持续出现请联系开发者")
 
     # =============================================================
@@ -679,6 +711,7 @@ if __name__ == '__main__':
         output(f"\n\n\n[最后一次访问数据] {visit_list[0]}")
         output(f"[自统计最早访问数据] {visit_list[-1]}")
     except:
+        err_log()
         output("[NULL] 无发言数据...")
 
     # =============================================================
@@ -721,11 +754,13 @@ if __name__ == '__main__':
         f.write(f"[观看直播次数] {watch_num}次\n")
         f.write(f"[最后一次访问数据] {visit_list[0]}\n")
         f.write(f"[自统计最早访问数据] {visit_list[-1]}\n")
-        f.write("======================================================\n")
     except:
-        f.write("[NULL] 无统计")
+        err_log()
+        f.write("[-] 数据过少，部分统计无法显示。")
 
-    f.write("\n\n统计结束，成分鉴定为....")
+    f.write("======================================================\n")
+
+    f.write(f"\n\n统计结束 - {get_date()}")
     f.close()  # 解除占用并保存写入
 
     # =============================================================
@@ -735,7 +770,7 @@ if __name__ == '__main__':
 
     # =============================================================
 
-    print(f"[OK] 用户{mid}的成分已经保存到当前文件夹，请查收。")
+    print(f"[OK] 用户{mid}的成分已经保存到datas文件夹，请查收。")
 
     # =============================================================
 
@@ -745,11 +780,15 @@ if __name__ == '__main__':
 
     f = open(f"gpt_datas\\gpt_{mid}_{all_info['name']}.txt", "w", encoding="utf-8")
     f.write(
-        f"TA的B站基本信息: \n昵称: {all_info['name']}\n简介: {all_info['sign']}\n粉丝数量: {all_info['fans']}\n关注数: {all_info['friend']}")
+        f"{all_info['name']}的B站基本信息: \n昵称: {all_info['name']}\n简介: {all_info['sign']}\n粉丝数量: {all_info['fans']}\n关注数: {all_info['friend']}")
     result = ""
-    f.write(f"\n\n以下是{all_info['name']}在各大直播间的发言(随机挑选100条):")
-    for t in range(100):
-        result = result + f"\n" + random.choice(msg_list)
+    f.write(f"\n\n以下是{all_info['name']}在各大直播间的发言:")
+    for t in range(250):
+        try:
+            result = result + f"\n" + random.choice(msg_list)
+        except:
+            err_log()
+            break
 
     f.write(result)
 
@@ -767,6 +806,10 @@ if __name__ == '__main__':
     if len(title_list) != 0:
         f.write(f"\n\n以下是{all_info['name']}的视频信息，分割线左边为标题右边为简介\n")
         for x in range(20):
-            f.write(f"{title_list[x]} | {description_list[x]}\n")
+            try:
+                f.write(f"{title_list[x]} | {description_list[x]}\n")
+            except:
+                err_log()
+                break
 
-    print(f"[OK] 文件保存在gpt_{mid}_{all_info['name']}.txt，请注意查看，您可删改文件的内容")
+    print(f"[OK] 文件保存在gpt_datas\\gpt_{mid}_{all_info['name']}.txt，请注意查看，您可删改文件的内容")
