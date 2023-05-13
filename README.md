@@ -285,7 +285,7 @@ UID:548076 - name:樱群 - 观看5次
                               contour_color='steelblue',
                               font_path="PingFang-Bold_0.ttf"
                               ).generate(result)
-        wordcloud.to_file(f'wordcloud_data\\WordCloud_{name}_{mid}.png')
+wordcloud.to_file(f'wordcloud_data\\WordCloud_{name}_{mid}.png')
 ```
 
 ![词云图](https://raw.githubusercontent.com/cwuom/GetBilibiliUserInfo/main/wordcloud_data/WordCloud_%E7%A2%A7%E8%AF%97_2.png)
