@@ -1,0 +1,2 @@
+requests==2.30.0
+wordcloud==1.9.1.1
