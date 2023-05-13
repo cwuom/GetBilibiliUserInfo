@@ -297,9 +297,9 @@ def output_space_data(mid):
     timeArray = time.localtime(vip_due_date / 1000)
 
     print_long_line("View", enter=True)
-    output(f"[视频总浏览] {archive_view}次")
-    output(f"[文章总浏览] {article_view}次")
-    output(f"[总播放] {article_view + archive_view}次")
+    output(f"[视频总浏览量] {archive_view}次")
+    output(f"[文章总浏览量] {article_view}次")
+    output(f"[总浏览量] {article_view + archive_view}次")
     output(f"[总被赞数] {likes}个")
     try:
         output(f"[被赞率] {(likes / (article_view + archive_view)) * 100}%")
@@ -318,7 +318,6 @@ def output_space_data(mid):
     output(f"[直播间URL] {live_url}")
     output(f"[直播间标题] {live_title}")
     output(f"[直播间封面] {live_cover}")
-    output(f"[大会员角色] {vip_role}")
     output(f"[直播间ID] {live_roomid}")
     output(f"[是否轮播] {live_roundStatus}")
 
@@ -414,8 +413,9 @@ def load_danmu_data(data_list):
                 elif danmu["type"] == 1:  # 送礼事件
                     # 累加数据，便于统计和输出
                     gifts_danmu.append(f"{channel['name']} - {channel['uId']}")
+                    timeArray_danmu = time.localtime(danmu["sendDate"] / 1000)  # 同上
                     gift_list_danmu.append(
-                        f"主播ID{channel['name']} - {channel['uId']}\n送礼日期: {danmu['sendDate']}\n礼物内容: {danmu['message']}")
+                        f"主播ID{channel['name']} - {channel['uId']}\n送礼日期: {time.strftime('%Y-%m-%d %H:%M:%S', timeArray_danmu)}\n礼物内容: {danmu['message']}")
 
     return {"show_list_danmu": show_list_danmu, "msg_list_danmu": msg_list_danmu, "visit_list_danmu": visit_list_danmu,
             "gift_list_danmu": gift_list_danmu, "message": message, "gifts_danmu": gifts_danmu}
