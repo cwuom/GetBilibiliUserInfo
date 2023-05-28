@@ -1,7 +1,6 @@
 
 <h1 align="center">GetBilibiliUserInfo</h1>
 <div align="center">
-<a href="https://github.com/GaiZhenBiao/ChuanhuChatGPT">
 <img src="logo.png" alt="Logo" height="300">
 </a>
 
