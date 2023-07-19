@@ -1,14 +1,10 @@
 
-<h1 align="center">GetBilibiliUserInfo</h1>
+<h1 align="center">GetDanmuSender</h1>
 <div align="center">
-<img src="logo.png" alt="Logo" height="300">
-</a>
 
 <p align="center">
-<h3>一个基于Python3.7开发的全自动bilibili用户信息爬取工具</h3>
-<p align="center">
-<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=SQ2EDC77_dObl8QOdmwMVxw39H8Ur1Ax&authKey=OD1jf7NyaNkZu0HpXuhjnFPTA9hWdxcmiU72rteVclsIWSziS1bjThC8OJaK36sV&noverify=0&group_code=893018099">
-<img alt="加入QQ交流群" src="https://img.shields.io/badge/QQGroup-893018099-blue" />
+    <h3>一个基于Python3.7开发的全自动bilibili用户信息爬取工具</h3>
+    <p align="center">
 </a>
 <p>
 自动爬取 / 词云生成 / 保存结果 / 数据文件生成(供GPT) <br />
@@ -16,12 +12,11 @@
 <br />
 示例文件，数据来源UID2
 <br />
-<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/datas/%E7%A2%A7%E8%AF%97_2.txt"><strong>主要数据文件</</a> | 
-<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/gpt_datas/gpt_2_%E7%A2%A7%E8%AF%97.txt"><strong>GPT数据文件</</a> |
-<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/wordcloud_data/WordCloud_%E7%A2%A7%E8%AF%97_2.png"><strong>词云展示文件</</a>
+<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/datas/%E7%A2%A7%E8%AF%97_2.txt"><strong>主要数据文件</a></strong> | 
+<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/gpt_datas/gpt_2_%E7%A2%A7%E8%AF%97.txt"><strong>GPT数据文件</a></strong> |
+<a href="https://github.com/cwuom/GetBilibiliUserInfo/blob/main/wordcloud_data/WordCloud_%E7%A2%A7%E8%AF%97_2.png"><strong>词云展示文件</a></strong>
 </p>
-</p>
-</p>
+  </p>
 </div>
 
 
