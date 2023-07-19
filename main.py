@@ -1,3 +1,5 @@
+# coding:utf-8
+
 """
 bilibili用户信息爬取demo
 只需要一个回车我要TA的所有信息！
@@ -52,13 +54,13 @@ ef = open("runlog.log", "a+", encoding="utf-8")
 
 
 def Major_err_log():
-    ef.write("\n\n=========== Major_err ===========\n")
+    ef.write("\n\n=========== 重要错误 ===========\n")
     ef.write(f"[*{get_date()}*] {traceback.format_exc()}\n")
     ef.write("=================================\n")
 
 
 def err_log():
-    ef.write(f"[{get_date()}*NormalErr] {traceback.format_exc()}\n")
+    ef.write(f"[{get_date()}] {traceback.format_exc()}\n")
 
 
 # 输出分割线
@@ -187,6 +189,12 @@ def output_space_data(mid):
                                      headers=headers).text.replace(
                 """{"code":-509,"message":"请求过于频繁，请稍后再试","ttl":1}""", "")
 
+            if spaceInfo == "{'code': -799, 'message': '请求过于频繁，请稍后再试', 'ttl': 1}":
+                print("[!] Get SpaceInfo Error! Try again")
+                spaceInfo = requests.get(f"https://workers.vrp.moe/api/bilibili/user-info/{mid}", cookies=cookies,
+                                         headers=headers).text.replace(
+                    """{"code":-509,"message":"请求过于频繁，请稍后再试","ttl":1}""", "")["data"]
+
             try:
                 views_data = json.loads(views.text)["data"]
                 archive_view = views_data["archive"]["view"]
@@ -197,7 +205,9 @@ def output_space_data(mid):
                 archive_view = "无"
                 article_view = "无"
 
-            space_data = json.loads(spaceInfo)["data"]
+            space_data = json.loads(spaceInfo)
+            print(space_data)
+            space_data = space_data["data"]
             vip_info = space_data["vip"]
             vip_due_date = vip_info["due_date"]
             vip_status_list = ["无", "有"]
@@ -284,7 +294,8 @@ def output_space_data(mid):
                 roomStatus = "无"
 
             break
-        except:
+        except Exception as e:
+            print(f"[Err] {e}")
             Major_err_log()
             cookies = update_cookies("Something went wrong! "
                                      "please update your cookies or check your network setting...",
@@ -465,13 +476,13 @@ def get_danmu_data():
 def get_UserInfo():
     int(mid)  # 检测是否为整数
     # 获取用户数据
-    userInfo = requests.get(f"https://workers.vrp.moe/api/bilibili/user-info/{mid}",
-                            headers={'User-Agent': random.choice(user_agent_list)})
+    userInfo = requests.get(f"https://account.bilibili.com/api/member/getCardByMid?mid={mid}",
+                            headers={'User-Agent': random.choice(user_agent_list)}, cookies=cookies)
     # userInfo = """{"ts":1683812730,"code":0,"card":{"mid":"114514","name":"田所こうじ","approve":false,"sex":"保密","rank":"10000","face":"http://i1.hdslb.com/bfs/face/875eb66bb952f16afa9634081a820dea8e3fac96.jpg","coins":3920,"DisplayRank":"10000","regtime":1301713382,"spacesta":0,"place":"","birthday":"1919-08-10","sign":"？！","description":"","article":0,"attentions":[454765848,1955897084,382651856,476720460,1409863611,174501086,9617619,50329118,401742377,161775300,9429196,207704,888797,7676631,11357018,1537722,905975,367238,395],"fans":44847,"friend":19,"attention":19,"level_info":{"next_exp":-1,"current_level":6,"current_min":28800,"current_exp":35440},"pendant":{"pid":0,"name":"","image":"","expire":0},"official_verify":{"type":-1,"desc":""}}}"""
 
     # 获取此用户的知名粉丝
     famous_fans = requests.get(f"https://workers.vrp.moe/api/bilibili/famous-fans/{mid}",
-                               headers={'User-Agent': random.choice(user_agent_list)})
+                               headers={'User-Agent': random.choice(user_agent_list)}, cookies=cookies)
     # famous_fans = """[{"name":"宵刑星-","mid":2087877804,"face":"https://i0.hdslb.com/bfs/face/27a753fe0844514874aad07588a07b14d981990d.jpg","fans":304367},{"name":"mc-末影小黑","mid":69720889,"face":"https://i1.hdslb.com/bfs/face/ddab29b7e5978cf98b1d2bd7400b6b63f28be4e6.jpg","fans":159873},{"name":"木下下下下下下下","mid":35239580,"face":"https://i2.hdslb.com/bfs/face/a3514187beba71aefcd4109f75992db4643d4fac.jpg","fans":98382},{"name":"来点然能量","mid":2135171763,"face":"https://i0.hdslb.com/bfs/face/5929871c359a859bbb5dae12b69bf217a836f022.jpg","fans":69419},{"name":"决心_Determination","mid":53291709,"face":"https://i0.hdslb.com/bfs/face/0d0992777f49793e8025c1f5db7e42e11ee96f16.jpg","fans":57958},{"name":"阿毛带你买橘子","mid":21310180,"face":"https://i1.hdslb.com/bfs/face/05438a7ac2881cedb313f0cdfb4094b7c3a3ea34.jpg","fans":55000},{"name":"无奈的甜瓜","mid":1321009337,"face":"http://i2.hdslb.com/bfs/face/4c39fe9655ed8e1544f265fc0260fa2fcf2c37de.jpg","fans":39465},{"name":"决心jx","mid":323900921,"face":"https://i2.hdslb.com/bfs/face/f15c12285aed6af82b5e3061ac5121037ff67414.jpg","fans":39402},{"name":"空条kujo_","mid":352738858,"face":"https://i1.hdslb.com/bfs/face/9600a1cdf9f2e256696d4244d53b6bb5ade9633e.jpg","fans":38974},{"name":"一号铁人粉","mid":294445293,"face":"https://i0.hdslb.com/bfs/face/e230cfd34211b70452dcb2db6007777a48a5424c.jpg","fans":35651},{"name":"A志坤","mid":294624876,"face":"http://i0.hdslb.com/bfs/face/af3ffb9fe4b8a95d09c80473000e303a0a7587a3.jpg","fans":32165},{"name":"黑木白bai","mid":503314683,"face":"https://i0.hdslb.com/bfs/face/4894183cbb1bc57bc04d361b05ad4c5a72a1512d.jpg","fans":29787},{"name":"零明","mid":3154865,"face":"https://i2.hdslb.com/bfs/face/ea9afa46521b5d790b194292906616fd6684c087.jpg","fans":25764},{"name":"我肯定是lsx","mid":486108822,"face":"https://i0.hdslb.com/bfs/face/65e3b590feeb1992984fecf304b3298648b33143.jpg","fans":25455},{"name":"CR训练师","mid":286572267,"face":"https://i0.hdslb.com/bfs/face/4c3fde9ede45aa9c998cb54687f09be88a69cc2e.jpg","fans":23095},{"name":"陨落之弓","mid":596105030,"face":"https://i2.hdslb.com/bfs/face/bfab9b09ef876294bcf3cb867ef8f3ad498d830d.jpg","fans":22831},{"name":"蜘蛛鸭","mid":38914323,"face":"https://i0.hdslb.com/bfs/face/6406fc563094803fb01f6363f6d35358dc1ac3e5.jpg","fans":20741},{"name":"戴夫邻居史蒂夫DFsteve","mid":381681555,"face":"https://i0.hdslb.com/bfs/face/aa51dd900a85a69ad3244cba7e9ce67fa21a066c.webp","fans":20624},{"name":"冬雨无痕","mid":913173,"face":"https://i0.hdslb.com/bfs/face/5ecb7527dd153a50207a346a608834335e95a4ec.gif","fans":19461},{"name":"取个难听de名字真难","mid":397463553,"face":"http://i0.hdslb.com/bfs/face/0d03998daf472ef9a1facc609fc6f008fe71087c.jpg","fans":17393}]"""
 
     data = json.loads(userInfo.text)  # 解析数据
