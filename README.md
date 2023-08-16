@@ -1,5 +1,5 @@
 
-<h1 align="center">GetDanmuSender</h1>
+<h1 align="center">GetBilibiliUserInfo</h1>
 <div align="center">
 
 <p align="center">
