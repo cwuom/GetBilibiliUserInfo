@@ -1,4 +1,4 @@
-
+https://lengyue.me/
 <h1 align="center">GetBilibiliUserInfo</h1>
 <div align="center">
 
@@ -310,8 +310,6 @@ wordcloud.to_file(f'wordcloud_data\\WordCloud_{name}_{mid}.png')
 
 # 声明
 - 本人只负责整理数据并没有自己的数据库，所有数据大多也是在公开透明的基础上的
-- GetBilibiliUserInfo是一个免费的脚本，不会对任何人采取强制收费措施
-- 由于项目的特殊性，开发者也许会在未来随时停更或删除此项目
 - 请勿滥用，本项目仅用于学习和测试
 
 
