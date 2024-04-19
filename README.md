@@ -1,4 +1,3 @@
-https://lengyue.me/
 <h1 align="center">GetBilibiliUserInfo</h1>
 <div align="center">
 
